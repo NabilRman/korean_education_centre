@@ -1,0 +1,138 @@
+<!-- korean_education_centre/templates/authentication/profile_base.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex">
+    <!-- Side Profile Menu -->
+    <div class="w-64 bg-white shadow-lg h-screen fixed left-0 top-16">
+        <div class="p-4 border-b">
+            <div class="flex items-center space-x-4">
+                {% if user.userprofile.profile_picture %}
+                    <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-12 h-12 rounded-full">
+                {% else %}
+                    <div class="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-xl text-gray-600">{{ user.first_name|first|upper }}</span>
+                    </div>
+                {% endif %}
+                <div>
+                    <h3 class="font-medium">{{ user.get_full_name }}</h3>
+                    <p class="text-sm text-gray-500">{{ user.userprofile.role|title }}</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="mt-4">
+            <!-- Profile Section -->
+            <div class="px-4 py-2">
+                <button class="flex items-center justify-between w-full text-left" onclick="toggleDropdown('profileDropdown')">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Profile Settings
+                    </span>
+                    <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="profileDropdown" class="hidden pl-8 mt-2 space-y-2">
+                    <a href="{% url 'profile_dashboard' %}" class="block py-2 text-sm text-gray-700 hover:text-blue-600">View Profile</a>
+                    <a href="{% url 'update_profile' %}" class="block py-2 text-sm text-gray-700 hover:text-blue-600">Edit Profile</a>
+                    <a href="{% url 'change_password' %}" class="block py-2 text-sm text-gray-700 hover:text-blue-600">Change Password</a>
+                </div>
+            </div>
+
+            <!-- Program Applications -->
+            <div class="px-4 py-2">
+                <button class="flex items-center justify-between w-full text-left" onclick="toggleDropdown('programDropdown')">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        Programs
+                    </span>
+                    <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="programDropdown" class="hidden pl-8 mt-2 space-y-2">
+                    <a href="{% url 'program_applications' %}" class="block py-2 text-sm text-gray-700 hover:text-blue-600">My Applications</a>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="px-4 py-2">
+                <button class="flex items-center justify-between w-full text-left" onclick="toggleDropdown('securityDropdown')">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Security
+                    </span>
+                    <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="securityDropdown" class="hidden pl-8 mt-2 space-y-2">
+                    <a href="{% url 'setup_2fa' %}" class="block py-2 text-sm text-gray-700 hover:text-blue-600">Two-Factor Authentication</a>
+                    <a href="{% url 'security_settings' %}" class="block py-2 text-sm text-gray-700 hover:text-blue-600">Security Settings</a>
+                </div>
+            </div>
+
+            <!-- Logout -->
+            <div class="px-4 py-2 mt-4">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center text-red-600 hover:text-red-800">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="ml-64 flex-1 p-8">
+        {% block profile_content %}{% endblock %}
+    </div>
+</div>
+
+<script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    const allDropdowns = document.querySelectorAll('[id$="Dropdown"]');
+    const button = dropdown.previousElementSibling;
+    const arrow = button.querySelector('svg:last-child');
+    
+    // Close all other dropdowns
+    allDropdowns.forEach(d => {
+        if (d.id !== id && !d.classList.contains('hidden')) {
+            d.classList.add('hidden');
+            d.previousElementSibling.querySelector('svg:last-child').classList.remove('rotate-180');
+        }
+    });
+
+    // Toggle current dropdown
+    dropdown.classList.toggle('hidden');
+    arrow.classList.toggle('rotate-180');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdowns = document.querySelectorAll('[id$="Dropdown"]');
+    const buttons = document.querySelectorAll('button');
+    
+    if (!Array.from(buttons).some(button => button.contains(event.target))) {
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+                dropdown.previousElementSibling.querySelector('svg:last-child').classList.remove('rotate-180');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

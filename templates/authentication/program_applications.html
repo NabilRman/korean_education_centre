@@ -1,0 +1,164 @@
+<!-- templates/authentication/my_applications.html -->
+{% extends 'base.html' %}
+
+{% block title %}Program Appliication{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-900">My Program Applications</h2>
+            <a href="{% url 'programs' %}" class="btn-primary">Apply for New Program</a>
+        </div>
+
+        {% if applications %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Program</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applied Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for application in applications %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ application.program.name }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ application.program.get_program_type_display }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ application.application_date|date:"M d, Y" }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if application.status == 'APPROVED' %}bg-green-100 text-green-800
+                                {% elif application.status == 'REJECTED' %}bg-red-100 text-red-800
+                                {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                {{ application.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="showDetails('{{ application.id }}')" 
+                                    class="text-blue-600 hover:text-blue-900 mr-3">View Details</button>
+                        </td>
+                    </tr>
+                    <!-- Application Details Modal -->
+                    <div id="details-{{ application.id }}" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+                        <div class="relative top-20 mx-auto p-5 border w-full max-w-xl shadow-lg rounded-md bg-white">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium">Application Details</h3>
+                                <button onclick="hideDetails('{{ application.id }}')" class="text-gray-400 hover:text-gray-500">
+                                    <span class="sr-only">Close</span>
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="mt-2">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="col-span-2">
+                                        <p class="text-sm font-medium text-gray-500">Program Name</p>
+                                        <p class="mt-1">{{ application.program.name }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500">Start Date</p>
+                                        <p class="mt-1">{{ application.program.start_date|date:"M d, Y" }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500">End Date</p>
+                                        <p class="mt-1">{{ application.program.end_date|date:"M d, Y" }}</p>
+                                    </div>
+                                    {% if application.review_notes %}
+                                    <div class="col-span-2">
+                                        <p class="text-sm font-medium text-gray-500">Review Notes</p>
+                                        <p class="mt-1">{{ application.review_notes }}</p>
+                                    </div>
+                                    {% endif %}
+                                    {% if application.status == 'APPROVED' %}
+                                    <div class="col-span-2 mt-4">
+                                        <a href="#" class="btn-primary w-full text-center">Download Acceptance Letter</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if applications.has_other_pages %}
+        <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if applications.has_previous %}
+                    <a href="?page={{ applications.previous_page_number }}" class="btn-secondary">Previous</a>
+                {% endif %}
+                {% if applications.has_next %}
+                    <a href="?page={{ applications.next_page_number }}" class="btn-secondary">Next</a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing page {{ applications.number }} of {{ applications.paginator.num_pages }}
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        {% if applications.has_previous %}
+                            <a href="?page={{ applications.previous_page_number }}" class="btn-secondary">Previous</a>
+                        {% endif %}
+                        {% if applications.has_next %}
+                            <a href="?page={{ applications.next_page_number }}" class="btn-secondary">Next</a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No applications yet</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by applying to a program.</p>
+            <div class="mt-6">
+                <a href="{% url 'programs' %}" class="btn-primary">
+                    Browse Programs
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function showDetails(applicationId) {
+    document.getElementById(`details-${applicationId}`).classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideDetails(applicationId) {
+    document.getElementById(`details-${applicationId}`).classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target.classList.contains('fixed')) {
+        event.target.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+</script>
+{% endblock %}

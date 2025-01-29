@@ -1,0 +1,100 @@
+<!-- templates/home/programs.html -->
+{% extends 'base.html' %}
+
+{% block title %}Programs{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Available Programs</h1>
+        
+        <!-- Program Type Filter -->
+        <div class="flex gap-4">
+            <select id="programType" onchange="filterPrograms()" class="rounded-md border-gray-300">
+                <option value="">All Types</option>
+                <option value="PRE_KOREA">Pre-Korea</option>
+                <option value="K_LIP">K-Lip</option>
+                <option value="EXAM">Exam Registration</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Programs Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for program in programs %}
+        <div class="program-card bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <h2 class="text-xl font-semibold text-gray-900">{{ program.name }}</h2>
+                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                        {{ program.get_program_type_display }}
+                    </span>
+                </div>
+                
+                <p class="mt-3 text-gray-600 text-sm line-clamp-3">{{ program.description }}</p>
+                
+                <div class="mt-4 space-y-2">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {{ program.start_date|date:"M d, Y" }} - {{ program.end_date|date:"M d, Y" }}
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <a href="{{ program.brochure.url }}" target="_blank" 
+                       class="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        Download Brochure
+                    </a>
+                    <a href="{% url 'apply_program' program.id %}" 
+                       class="btn-primary text-sm">Apply Now</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No programs available</h3>
+            <p class="mt-1 text-sm text-gray-500">Check back later for new programs.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if programs.has_other_pages %}
+    <div class="mt-8 flex justify-center">
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+            {% if programs.has_previous %}
+                <a href="?page={{ programs.previous_page_number }}" class="btn-secondary rounded-l-md">Previous</a>
+            {% endif %}
+            
+            {% for i in programs.paginator.page_range %}
+                <a href="?page={{ i }}" 
+                   class="px-3 py-2 border {% if programs.number == i %}bg-blue-50 border-blue-500 text-blue-600{% else %}border-gray-300 text-gray-700{% endif %}">
+                    {{ i }}
+                </a>
+            {% endfor %}
+            
+            {% if programs.has_next %}
+                <a href="?page={{ programs.next_page_number }}" class="btn-secondary rounded-r-md">Next</a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function filterPrograms() {
+    const type = document.getElementById('programType').value;
+    window.location.href = `?type=${type}`;
+}
+</script>
+{% endblock %}

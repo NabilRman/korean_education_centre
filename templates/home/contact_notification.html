@@ -1,0 +1,37 @@
+<!-- templates/home/contact_notification.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f8f9fa; padding: 20px; margin-bottom: 20px; }
+        .content { padding: 20px; }
+        .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>New Contact Inquiry</h2>
+        </div>
+        
+        <div class="content">
+            <p><strong>From:</strong> {{ inquiry.name }} ({{ inquiry.email }})</p>
+            <p><strong>Type:</strong> {{ inquiry.get_inquiry_type_display }}</p>
+            <p><strong>Subject:</strong> {{ inquiry.subject }}</p>
+            
+            {% if inquiry.phone %}
+            <p><strong>Phone:</strong> {{ inquiry.phone }}</p>
+            {% endif %}
+            
+            <h3>Message:</h3>
+            <p>{{ inquiry.message|linebreaks }}</p>
+        </div>
+        
+        <div class="footer">
+            <p>This inquiry was received on {{ inquiry.created_at|date:"F j, Y, g:i a" }}</p>
+        </div>
+    </div>
+</body>
+</html>

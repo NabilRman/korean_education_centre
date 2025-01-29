@@ -1,0 +1,156 @@
+<!-- korean_education_centre/templates/authentication/register.html -->
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="px-6 py-8">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Student Registration</h2>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Existing fields from the previous snippet -->
+                <div>
+                    <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" name="username" id="id_username" required 
+                           class="form-input {% if form.username.errors %}border-red-500{% endif %}"
+                           {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
+                    {% if form.username.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="id_email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" id="id_email" required 
+                           class="form-input {% if form.email.errors %}border-red-500{% endif %}"
+                           {% if form.email.value %}value="{{ form.email.value }}"{% endif %}>
+                    {% if form.email.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="id_first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                    <input type="text" name="first_name" id="id_first_name" required 
+                           class="form-input {% if form.first_name.errors %}border-red-500{% endif %}"
+                           {% if form.first_name.value %}value="{{ form.first_name.value }}"{% endif %}>
+                    {% if form.first_name.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="id_last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <input type="text" name="last_name" id="id_last_name" required 
+                           class="form-input {% if form.last_name.errors %}border-red-500{% endif %}"
+                           {% if form.last_name.value %}value="{{ form.last_name.value }}"{% endif %}>
+                    {% if form.last_name.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.last_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="id_phone_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="tel" name="phone_number" id="id_phone_number" required 
+                           class="form-input {% if form.phone_number.errors %}border-red-500{% endif %}"
+                           {% if form.phone_number.value %}value="{{ form.phone_number.value }}"{% endif %}
+                           pattern="[0-9+\-\s()]{10,15}">
+                    {% if form.phone_number.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.phone_number.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="id_password1" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password1" id="id_password1" required 
+                           class="form-input {% if form.password1.errors %}border-red-500{% endif %}"
+                           pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{12,}$">
+                    {% if form.password1.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
+                    {% endif %}
+                    <div class="mt-1 text-sm text-gray-500">
+                        <ul class="list-disc list-inside">
+                            <li>At least 12 characters long</li>
+                            <li>Must include uppercase and lowercase letters</li>
+                            <li>Must include at least one number</li>
+                            <li>Must include at least one special character (@$!%*#?&)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <input type="password" name="password2" id="id_password2" required 
+                           class="form-input {% if form.password2.errors %}border-red-500{% endif %}">
+                    {% if form.password2.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-span-2">
+                    <label for="id_address" class="block text-sm font-medium text-gray-700">Address</label>
+                    <textarea name="address" id="id_address" required rows="3"
+                              class="form-input {% if form.address.errors %}border-red-500{% endif %}">{% if form.address.value %}{{ form.address.value }}{% endif %}</textarea>
+                    {% if form.address.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.address.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-span-2">
+                <button type="submit" class="w-full btn-primary">
+                    Register
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+                Already have an account? 
+                <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-500">
+                    Login here
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Client-side form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        const password1 = document.getElementById('id_password1').value;
+        const password2 = document.getElementById('id_password2').value;
+
+        if (password1 !== password2) {
+            event.preventDefault();
+            alert('Passwords do not match!');
+            return false;
+        }
+
+        // Phone number validation
+        const phoneNumber = document.getElementById('id_phone_number').value;
+        const phonePattern = /^[0-9+\-\s()]{10,15}$/;
+        if (!phonePattern.test(phoneNumber)) {
+            event.preventDefault();
+            alert('Please enter a valid phone number!');
+            return false;
+        }
+    });
+
+    // Prevent form resubmission on page refresh
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
+{% endblock %}

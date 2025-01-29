@@ -1,0 +1,45 @@
+<!-- korean_education_centre/templates/authentication/admin_dashboard.html -->
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Admin Dashboard</h1>
+    
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-gray-500 text-sm font-medium">Pending Applications</h3>
+            <p class="text-3xl font-bold">{{ pending_applications }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-gray-500 text-sm font-medium">Total Students</h3>
+            <p class="text-3xl font-bold">{{ total_students }}</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Notice the updated URL here -->
+                <a href="{% url 'manage_students' %}" class="block p-4 border rounded-lg hover:bg-gray-50">
+                    <h3 class="font-medium">Manage Students</h3>
+                    <p class="text-sm text-gray-500">View and manage student accounts</p>
+                </a>
+                <a href="{% url 'profile_dashboard' %}" class="block p-4 border rounded-lg hover:bg-gray-50">
+                    <h3 class="font-medium">View Profile</h3>
+                    <p class="text-sm text-gray-500">Manage your account settings</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+    <a href="{% url 'admin_logs' %}" class="nav-link">
+        <span>System Logs</span>
+    </a>
+</div>
+{% endblock %}

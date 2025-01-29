@@ -1,0 +1,94 @@
+<!-- templates/home/apply_program.html -->
+{% extends 'base.html' %}
+
+{% block title %}Apply for Program{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b">
+            <h2 class="text-xl font-semibold text-gray-900">Program Application</h2>
+        </div>
+        
+        <div class="p-6">
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-gray-900">{{ program.name }}</h3>
+                <p class="mt-2 text-sm text-gray-600">{{ program.description }}</p>
+                
+                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="font-medium text-gray-500">Program Type:</span>
+                        <span class="ml-2">{{ program.get_program_type_display }}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-500">Duration:</span>
+                        <span class="ml-2">{{ program.start_date|date:"M d, Y" }} - {{ program.end_date|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" class="space-y-6" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- File Upload Section -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="application_document" class="block text-sm font-medium text-gray-700">
+                            Application Document (PDF)
+                        </label>
+                        <div class="mt-1">
+                            <input type="file" name="application_document" id="application_document" 
+                                   accept=".pdf"
+                                   class="block w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-md file:border-0
+                                          file:text-sm file:font-medium
+                                          file:bg-blue-50 file:text-blue-700
+                                          hover:file:bg-blue-100"
+                                   required>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Please upload your application document in PDF format (max 5MB)</p>
+                        {% if form.application_document.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.application_document.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if user.userprofile.is_student %}
+                    <div class="flex items-center justify-end">
+                        <a href="{% url 'programs' %}" class="btn-secondary mr-4">Cancel</a>
+                        <button type="submit" class="btn-primary">Submit Application</button>
+                    </div>
+                {% else %}
+                    <div class="bg-yellow-50 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                        You must complete your student profile before applying for programs.
+                        <a href="{% url 'profile_dashboard' %}" class="underline">Complete Profile</a>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('application_document').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size must be less than 5MB');
+            e.target.value = '';
+        }
+        if (!file.type.includes('pdf')) {
+            alert('Only PDF files are allowed');
+            e.target.value = '';
+        }
+    }
+});
+</script>
+{% endblock %}

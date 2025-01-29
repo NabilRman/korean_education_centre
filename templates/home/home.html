@@ -1,0 +1,83 @@
+<!-- korean_education_centre/templates/home/home.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="home-container">
+    <div class="hero">
+        <h1>Welcome to Korean Education Centre</h1>
+        <p>Your gateway to Korean language and culture</p>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <h2>Language Courses</h2>
+            <p>From beginner to advanced levels</p>
+        </div>
+        <div class="feature-card">
+            <h2>Cultural Programs</h2>
+            <p>Experience Korean culture firsthand</p>
+        </div>
+        <div class="feature-card">
+            <h2>Online Learning</h2>
+            <p>Learn at your own pace</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .home-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        color: #666;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-card h2 {
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: #666;
+    }
+</style>
+{% endblock %}

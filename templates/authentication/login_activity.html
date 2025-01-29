@@ -1,0 +1,74 @@
+<!-- korean_education_centre/templates/authentication/login_activity.html -->
+{% extends 'authentication/profile_base.html' %}
+
+{% block profile_content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-6">Login Activity</h2>
+    
+    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Date & Time</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">IP Address</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Location</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Device</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+                {% for activity in activity_list %}
+                <tr>
+                    <td class="px-6 py-4 text-sm text-gray-900">
+                        {{ activity.timestamp|date:"M d, Y H:i" }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {{ activity.ip_address }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {{ activity.location|default:"Unknown" }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {{ activity.user_agent|truncatechars:30 }}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        {% if activity.was_successful %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Successful
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                Failed
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-sm text-gray-500 text-center">
+                        No login activity recorded
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if activity_list.has_other_pages %}
+    <div class="mt-4 flex items-center justify-between">
+        <div class="flex-1 flex justify-between sm:hidden">
+            {% if activity_list.has_previous %}
+                <a href="?page={{ activity_list.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Previous
+                </a>
+            {% endif %}
+            {% if activity_list.has_next %}
+                <a href="?page={{ activity_list.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Next
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

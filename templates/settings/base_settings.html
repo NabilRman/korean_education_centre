@@ -1,0 +1,170 @@
+<!-- templates/settings/security/two_factor.html -->
+{% extends 'settings/base_settings.html' %}
+
+{% block settings_content %}
+<div class="max-w-4xl mx-auto p-6">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">Two-Factor Authentication</h1>
+        <p class="mt-2 text-gray-600">Add an extra layer of security to your account by enabling two-factor authentication.</p>
+    </div>
+
+    <div class="bg-white shadow rounded-lg divide-y divide-gray-200">
+        <!-- 2FA Status Section -->
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Status</h3>
+                    <p class="mt-1 text-sm text-gray-500">Two-factor authentication is currently 
+                        {% if user.userprofile.is_2fa_enabled %}
+                            <span class="text-green-600 font-medium">enabled</span>
+                        {% else %}
+                            <span class="text-red-600 font-medium">disabled</span>
+                        {% endif %}
+                    </p>
+                </div>
+                {% if user.userprofile.is_2fa_enabled %}
+                    <button onclick="showDisableModal()" class="btn-secondary">Disable 2FA</button>
+                {% else %}
+                    <button onclick="showSetupModal()" class="btn-primary">Enable 2FA</button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recovery Codes Section -->
+        {% if user.userprofile.is_2fa_enabled %}
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Recovery Codes</h3>
+                    <p class="mt-1 text-sm text-gray-500">Keep these codes safe in case you lose access to your authenticator app.</p>
+                </div>
+                <button onclick="showRecoveryCodes()" class="text-blue-600 hover:text-blue-800">View Codes</button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Backup Methods Section -->
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900">Backup Methods</h3>
+            <div class="mt-4 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Recovery Email</p>
+                        <p class="text-sm text-gray-500">{{ user.email }}</p>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800">Update</button>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Recovery Phone</p>
+                        <p class="text-sm text-gray-500">{{ user.userprofile.phone_number|default:"Not set" }}</p>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Setup 2FA Modal -->
+<div id="setupModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Set up Two-Factor Authentication</h3>
+            <div class="mt-2 px-7 py-3">
+                <!-- QR Code will be displayed here -->
+                <div id="qrcode" class="flex justify-center mb-4"></div>
+                <p class="text-sm text-gray-500">Scan this QR code with your authenticator app</p>
+                <form id="setup2FAForm" class="mt-4">
+                    {% csrf_token %}
+                    <input type="text" id="verificationCode" 
+                           class="w-full px-3 py-2 border rounded-md" 
+                           placeholder="Enter verification code">
+                    <button type="submit" class="w-full btn-primary mt-4">Verify and Enable</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recovery Codes Modal -->
+<div id="recoveryCodesModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">Recovery Codes</h3>
+            <div class="mt-2 px-7 py-3">
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <pre id="recoveryCodes" class="text-sm"></pre>
+                </div>
+                <p class="mt-2 text-sm text-gray-500 text-center">
+                    Save these codes in a secure place. Each code can only be used once.
+                </p>
+                <div class="mt-4 flex justify-center">
+                    <button onclick="downloadRecoveryCodes()" class="btn-secondary mr-2">Download</button>
+                    <button onclick="hideRecoveryCodes()" class="btn-primary">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showSetupModal() {
+    document.getElementById('setupModal').classList.remove('hidden');
+    // Call API to get QR code and display it
+    fetch('/api/2fa/setup/')
+        .then(response => response.json())
+        .then(data => {
+            // Display QR code
+            document.getElementById('qrcode').innerHTML = data.qr_code;
+        });
+}
+
+function showRecoveryCodes() {
+    document.getElementById('recoveryCodesModal').classList.remove('hidden');
+    // Call API to get recovery codes
+    fetch('/api/2fa/recovery-codes/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('recoveryCodes').textContent = data.codes.join('\n');
+        });
+}
+
+function hideRecoveryCodes() {
+    document.getElementById('recoveryCodesModal').classList.add('hidden');
+}
+
+function downloadRecoveryCodes() {
+    const codes = document.getElementById('recoveryCodes').textContent;
+    const blob = new Blob([codes], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'recovery-codes.txt';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+document.getElementById('setup2FAForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const code = document.getElementById('verificationCode').value;
+    
+    fetch('/api/2fa/verify/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ code: code })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Invalid verification code. Please try again.');
+        }
+    });
+});
+</script>
+{% endblock %}

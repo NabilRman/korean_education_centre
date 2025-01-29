@@ -1,0 +1,114 @@
+<!-- korean_education_centre/templates/authentication/security_settings.html (continued) -->
+{% extends 'authentication/profile_base.html' %}
+
+{% block profile_content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-6">Security Settings</h2>
+    
+    <!-- Two-Factor Authentication Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Two-Factor Authentication</h3>
+                <p class="text-sm text-gray-500">Add an extra layer of security to your account</p>
+            </div>
+            <div>
+                {% if is_2fa_enabled %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        Enabled
+                    </span>
+                    <button onclick="window.location.href='{% url 'setup_2fa' %}'" class="ml-4 text-sm text-red-600 hover:text-red-900">
+                        Disable 2FA
+                    </button>
+                {% else %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                        Disabled
+                    </span>
+                    <button onclick="window.location.href='{% url 'setup_2fa' %}'" class="ml-4 text-sm text-blue-600 hover:text-blue-900">
+                        Enable 2FA
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Activity Section -->
+    <div class="mb-8">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Login Activity</h3>
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Date & Time</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">IP Address</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Device</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for activity in login_activity %}
+                    <tr>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ activity.timestamp|date:"M d, Y H:i" }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            {{ activity.ip_address }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            {{ activity.user_agent|truncatechars:30 }}
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            {% if activity.was_successful %}
+                                <span class="text-green-600">Successful</span>
+                            {% else %}
+                                <span class="text-red-600">Failed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 text-center">
+                            No login activity recorded
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Password Management Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Password Management</h3>
+                <p class="text-sm text-gray-500">Keep your account secure with a strong password</p>
+            </div>
+            <button onclick="window.location.href='{% url 'change_password' %}'" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                Change Password
+            </button>
+        </div>
+        {% if last_password_change %}
+        <p class="text-sm text-gray-600">
+            Last password change: {{ last_password_change|date:"M d, Y" }}
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Account Deactivation Section -->
+    <div>
+        <div class="border-t pt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Deactivate Account</h3>
+            <p class="text-sm text-gray-500 mb-4">
+                Once you deactivate your account, all your data will be permanently removed.
+                This action cannot be undone.
+            </p>
+            <button onclick="window.location.href='{% url 'deactivate_account' %}'" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+                Deactivate Account
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
